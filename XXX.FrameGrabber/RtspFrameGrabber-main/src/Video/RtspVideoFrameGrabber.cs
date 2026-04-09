@@ -315,7 +315,7 @@ namespace RtspFrameGrabber.Video
                         (AVPixelFormat)frame.format,                        
                         frame.width,
                         frame.height,
-                        AVPixelFormat.AV_PIX_FMT_RGB24,
+                        AVPixelFormat.AV_PIX_FMT_GRAY8,
                         ffmpeg.SWS_POINT, // Not really scaling, just format conversion.
                         null,
                         null,

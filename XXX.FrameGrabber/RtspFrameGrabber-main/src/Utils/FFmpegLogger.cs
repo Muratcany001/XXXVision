@@ -12,22 +12,15 @@ namespace RtspFrameGrabber.Utils
 {
     public class FFmpegLogger
     {
-#if NETCOREAPP3_0_OR_GREATER
         private static av_log_set_callback_callback? _logCallback;
-#else
-        private static av_log_set_callback_callback _logCallback;
-#endif
 
         /// <summary>
         /// Set FFmpeg log.
         /// </summary>
         /// <param name="logLevel">Log level</param>
         /// <param name="logFlags">Log flags, support &amp; operator.</param>
-#if NETCOREAPP3_0_OR_GREATER
         public static unsafe void SetupLogging(LogLevel logLevel = LogLevel.Verbose, LogFlags logFlags = LogFlags.PrintLevel, Action<string, int>? logWrite = null)
-#else
-        public static unsafe void SetupLogging(LogLevel logLevel = LogLevel.Verbose, LogFlags logFlags = LogFlags.PrintLevel, Action<string, int> logWrite = null)
-#endif
+
         {
             ffmpeg.av_log_set_level((int)logLevel);
             ffmpeg.av_log_set_flags((int)logFlags);
