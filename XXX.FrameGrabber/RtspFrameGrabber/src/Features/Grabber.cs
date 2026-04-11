@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using OpenCvSharp;
 
 namespace XXX.FrameGrabber.RtspFrameGrabber.Features;
@@ -11,20 +12,29 @@ public class Grabber
     }
     public void grabVideo(string RtspUrl , string userName , string password)
     {
+        int targetfps = 10;
+        double frameInterval = 1000.0 / targetfps;
         int frameCount = 0;
-        _camera.OnFrameReceived += (mat) =>
+        Stopwatch sw = new Stopwatch();
+        Action<Mat> onFrameHandler = (mat) =>
         {
-            frameCount++;
-            if (frameCount % 3 == 0)
+            if (sw.ElapsedMilliseconds > frameInterval)
             {
-                Console.WriteLine($"{frameCount} frame received, {mat.Width}x{mat.Height} frame size");
+                // Processing area. (write,threshold,do preprocessing)
+                frameCount++;
+                if (frameCount % 3 == 0)
+                {
+                    Console.WriteLine($"{frameCount} frame received, {mat.Width}x{mat.Height} frame size");
+                }
+                mat.Dispose();
             }
-            mat.Dispose();
         };
-        _camera.OnError += (msg) =>
+        Action<string> OnErrorhandler = (msg) =>
         {
             Console.WriteLine("error found");
         };
+        _camera.OnFrameReceived += onFrameHandler;
+        _camera.OnError += OnErrorhandler;
         try
         {
             RtspUrl = "rtsp://95.3.35.42";
@@ -32,6 +42,7 @@ public class Grabber
             password = "12345";
             _camera.Start(RtspUrl, userName, password);
             Console.WriteLine($"{frameCount} frame started");
+            Console.ReadLine();
         }
         catch (Exception e)
         {
@@ -39,6 +50,8 @@ public class Grabber
         }
         finally
         {
+            _camera.OnFrameReceived -= onFrameHandler;
+            _camera.OnError -= OnErrorhandler;
             _camera.Dispose();
             Console.WriteLine($"{frameCount} frame stopped");
         }
