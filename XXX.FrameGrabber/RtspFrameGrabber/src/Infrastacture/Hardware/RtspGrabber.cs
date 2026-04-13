@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using XXX.FrameGrabber.Features.Abstract;
 using Mat = OpenCvSharp.Mat;
 
-public class SimpleCamera : IDisposable
+public class SimpleCamera : IGrabber,IDisposable
 {
     private readonly object _lock = new object();
     private VideoCapture _capture;
@@ -16,7 +16,7 @@ public class SimpleCamera : IDisposable
     public event Action<Mat>? OnFrameReceived;
     public event Action<string>? OnError;
     
-    public void Start(string rtspUrl, string user, string pass)
+    public void GrabvVideo(string rtspUrl, string user, string pass)
     {
         if (_isRunning)
             throw new InvalidOperationException("Kamera zaten çalışıyor!");
