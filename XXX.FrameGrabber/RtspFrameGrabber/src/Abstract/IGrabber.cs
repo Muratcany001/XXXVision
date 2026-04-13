@@ -4,7 +4,7 @@ namespace XXX.FrameGrabber.Features.Abstract;
 
 public interface IGrabber
 {
-    event Action<Mat> OnFrameRecieved;
-    void StartGrab(string path);
-    void StopGrab();
+    void GrabvVideo(string rtspUrl, string user, string pass);
+    void Stop();
+    void Dispose();
 }

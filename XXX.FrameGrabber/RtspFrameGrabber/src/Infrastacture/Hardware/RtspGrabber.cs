@@ -2,9 +2,10 @@ using OpenCvSharp;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using XXX.FrameGrabber.Features.Abstract;
 using Mat = OpenCvSharp.Mat;
 
-public class SimpleCamera : IDisposable
+public class SimpleCamera : IGrabber,IDisposable
 {
     private readonly object _lock = new object();
     private VideoCapture _capture;
@@ -15,7 +16,7 @@ public class SimpleCamera : IDisposable
     public event Action<Mat>? OnFrameReceived;
     public event Action<string>? OnError;
     
-    public void Start(string rtspUrl, string user, string pass)
+    public void GrabvVideo(string rtspUrl, string user, string pass)
     {
         if (_isRunning)
             throw new InvalidOperationException("Kamera zaten çalışıyor!");
@@ -24,7 +25,7 @@ public class SimpleCamera : IDisposable
         
         string fullUrl = $"rtsp://{user}:{pass}@{new Uri(rtspUrl).Authority}{new Uri(rtspUrl).AbsolutePath}";
         
-        Console.WriteLine($"📹 Bağlanıyor: {rtspUrl.Replace(pass, "****")}");
+        Console.WriteLine($"Bağlanıyor: {rtspUrl.Replace(pass, "****")}");
 
         lock (_lock)
         {
@@ -85,14 +86,11 @@ public class SimpleCamera : IDisposable
 
                     success = _capture.Read(frame);
                 }
-
                 if (success && !frame.Empty())
                 {
                     errorCount = 0;
-
                     try
                     {
-
                         Mat cloned = frame.Clone();
                         OnFrameReceived?.Invoke(cloned);
                     }
@@ -130,7 +128,6 @@ public class SimpleCamera : IDisposable
             frame?.Dispose();
         }
     }
-
     /// <summary>
     /// Stop taking frames
     /// </summary>
